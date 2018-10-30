@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup
 
-from generateUI import __version__
+from pyqt5ac import __version__
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,7 +21,7 @@ setup(name='pyqt5AutoCompile',
       author_email='addison.elliott@gmail.com',
       url='https://github.com/addisonElliott/pyqt5AutoCompile',
       license='MIT License',
-      install_requires=['numpy'],
+      install_requires=['colorama'],
       python_requires='>=3',
       py_modules=['generateUI'],
       keywords='pyqt pyqt5 qt qt5 qt auto compile generate ui rc pyuic5 pyrcc5',
