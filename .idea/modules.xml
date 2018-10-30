@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pyqt5AutoCompile.iml" filepath="$PROJECT_DIR$/.idea/pyqt5AutoCompile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pyqt5ac.iml" filepath="$PROJECT_DIR$/.idea/pyqt5ac.iml" />
     </modules>
   </component>
 </project>

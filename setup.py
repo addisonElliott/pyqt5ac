@@ -12,18 +12,21 @@ with open(os.path.join(currentPath, 'README.md'), 'r') as f:
 
 longDescription = '\n' + longDescription
 
-setup(name='pyqt5AutoCompile',
+setup(name='pyqt5ac',
       version=__version__,
       description='Python module to automatically compile UI and RC files in PyQt5 to Python files',
       long_description=longDescription,
       long_description_content_type='text/markdown',
       author='Addison Elliott',
       author_email='addison.elliott@gmail.com',
-      url='https://github.com/addisonElliott/pyqt5AutoCompile',
+      url='https://github.com/addisonElliott/pyqt5ac',
       license='MIT License',
       install_requires=['colorama'],
       python_requires='>=3',
-      py_modules=['generateUI'],
+      py_modules=['pyqt5ac'],
+      entry_points={
+          'console_scripts': ['pyqt5ac = pyqt5ac:main']
+      },
       keywords='pyqt pyqt5 qt qt5 qt auto compile generate ui rc pyuic5 pyrcc5',
       classifiers=[
           'License :: OSI Approved :: MIT License',
@@ -35,7 +38,7 @@ setup(name='pyqt5AutoCompile',
           'Programming Language :: Python :: 3.6'
       ],
       project_urls={
-          'Source': 'https://github.com/addisonElliott/pyqt5AutoCompile',
-          'Tracker': 'https://github.com/addisonElliott/pyqt5AutoCompile/issues',
+          'Source': 'https://github.com/addisonElliott/pyqt5ac',
+          'Tracker': 'https://github.com/addisonElliott/pyqt5ac/issues',
       }
       )
