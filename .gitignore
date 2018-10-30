@@ -100,5 +100,15 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# PyCharm Project specific
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/misc.xml
+.idea/dictionaries
+.idea/inspectionProfiles
+
+# Ignore IML file for project since it contains path dependent information
+*.iml
+
 # mypy
 .mypy_cache/
