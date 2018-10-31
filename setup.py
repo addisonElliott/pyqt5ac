@@ -1,10 +1,23 @@
 import os
+import re
 
 from setuptools import setup
 
-from pyqt5ac import __version__
-
 currentPath = os.path.abspath(os.path.dirname(__file__))
+
+
+def find_version(filename):
+    with open(filename, 'r') as fh:
+        # Read first 2048 bytes, __version__ string will be within that
+        data = fh.read(2048)
+
+        match = re.search(r'^__version__ = [\'"]([\w\d.\-]*)[\'"]$', data, re.M)
+
+        if match:
+            return match.group(1)
+
+    raise RuntimeError('Unable to find version string.')
+
 
 # Get the long description from the README file
 with open(os.path.join(currentPath, 'README.md'), 'r') as f:
@@ -13,7 +26,7 @@ with open(os.path.join(currentPath, 'README.md'), 'r') as f:
 longDescription = '\n' + longDescription
 
 setup(name='pyqt5ac',
-      version=__version__,
+      version=find_version('pyqt5ac.py'),
       description='Python module to automatically compile UI and RC files in PyQt5 to Python files',
       long_description=longDescription,
       long_description_content_type='text/markdown',
