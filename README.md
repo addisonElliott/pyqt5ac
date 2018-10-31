@@ -17,23 +17,23 @@ Installing
 pyqt5ac is currently available on `PyPi <https://pypi.python.org/pypi/pyqt5ac/>`_. The simplest way to
 install alone is using ``pip`` at a command line::
 
-  pip install pyqt5ac
+    pip install pyqt5ac
 
 which installs the latest release.  To install the latest code from the repository (usually stable, but may have
 undocumented changes or bugs)::
 
-  pip install git+https://github.com/addisonElliott/pyqt5ac.git
+    pip install git+https://github.com/addisonElliott/pyqt5ac.git
 
 For developers, you can clone the pyqt5ac repository and run the ``setup.py`` file. Use the following commands to get
 a copy from GitHub and install all dependencies::
 
-  git clone pip install git+https://github.com/addisonElliott/pyqt5ac.git
-  cd pyqt5ac
-  pip install .
+    git clone pip install git+https://github.com/addisonElliott/pyqt5ac.git
+    cd pyqt5ac
+    pip install .
 
 or, for the last line, instead use::
 
-  pip install -e .
+    pip install -e .
 
 to install in 'develop' or 'editable' mode, where changes can be made to the local working code and Python will use
 the updated polarTransform code.
