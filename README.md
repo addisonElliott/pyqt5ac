@@ -10,7 +10,8 @@ These two filetypes must be compiled into Python files before they can be used i
 
 The downside to the first method is that it can be a tedious endeavor to compile the files, especially when one is faced with a larger project with many of these files that need to be compiled. Although the second method eliminates the tediousness of compilation, these files are compiled **every** time you run your script, regardless of if anything has been changed. This can cause a hit in performance and take longer to startup your script.
 
-Enter *pyqt5ac*! This command-line interface (CLI), given a set of parameters, will search through your files and automatically compile any *.ui* or *.qrc* files. In addition, pyqt5ac can be called from your Python script. In both instances, **ui and resource files are only compiled if they have been updated**.
+### Enter **pyqt5ac**!
+pyqt5ac provides a command-line interface (CLI) that searches through your files and automatically compiles any *.ui* or *.qrc* files. In addition, pyqt5ac can be called from your Python script. In both instances, **ui and resource files are only compiled if they have been updated**.
 
 Installing
 ==========
