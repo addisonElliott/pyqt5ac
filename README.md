@@ -233,6 +233,14 @@ Resulting File Structure
 |           └── module_rc.py
 ```
 
+Support
+=======
+Issues and pull requests are encouraged! 
+
+Bugs can be submitted through the [issue tracker](https://github.com/addisonElliott/pyqt5ac/issues).
+
+Pull requests are welcome too!
+
 License
 =================
 pyqt5ac has an MIT-based `license <https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE>`_.
