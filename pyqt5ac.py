@@ -4,71 +4,35 @@ import shlex
 import subprocess
 import sys
 
-try:
-    import colorama
-    colorama.init()
-except ImportError:
-    hasColorama = False
-else:
-    hasColorama = True
+import click
 
-# TODO Turn this into a PyPi script
 __version__ = '1.0.0'
-
-# Options
-# ----------------------------------------------------------------------------------------------------------------------
-# List containing source and destination of files to compile
-files = \
-    [
-        [
-            'gui/*.ui',
-            'generated/'
-        ]
-    ]
-
-pyrccCmd = 'pyrcc5'
-pyrccOptions = ''
-pyuicCmd = 'pyuic5'
-pyuicOptions = '--from-imports'
-
-
-# ----------------------------------------------------------------------------------------------------------------------
 
 
 # Takes command, options, source and destination folders and creates a command from it
 # Escapes the src/dst and removes any additional whitespace
-def buildCmd(cmd, options, src, dst):
-    newCmd = '%s %s %s -o %s' % (cmd, options, shlex.quote(src), shlex.quote(dst))
-    args = shlex.split(newCmd)
+def _buildCommand(command, options, sourceFilename, destFilename):
+    """Build PyQt5 command line string based on the command, options and arguments
 
-    return [arg for arg in args if arg]
+    String follows the syntax:
+        <command> <options> -o destFilename sourceFilename
+    """
 
+    # Construct command string
+    commandString = '%s %s -o %s %s' % (command, options, shlex.quote(destFilename), shlex.quote(sourceFilename))
 
-# Writes a colored message to the screen or falls back to a regular message
-def writeMessage(text, color=None):
-    if hasColorama:
-        colors = {
-            'red': colorama.Fore.RED,
-            'green': colorama.Fore.GREEN,
-            'yellow': colorama.Fore.YELLOW,
-            'blue': colorama.Fore.BLUE
-        }
-        try:
-            print(colors[color] + text + colorama.Fore.RESET)
-        except KeyError:
-            print(text)
-    else:
-        print(text)
+    # Split command string by spaces
+    args = shlex.split(commandString)
+
+    # Remove any blank arguments meaning there were double spaces in the command string and then rejoin the args
+    return ' '.join([arg for arg in args if arg])
 
 
-def isOutdated(src, dst, ui, force):
-    if force:
-        return True
-
+def _isOutdated(src, dst, isQRCFile):
     outdated = (not os.path.exists(dst) or
                 (os.path.getmtime(src) > os.path.getmtime(dst)))
 
-    if not outdated and not ui:
+    if not outdated and isQRCFile:
         # For qrc files, we need to check each individual resources.
         # If one of them is newer than the dst file, the qrc file must be considered as outdated.
         # File paths are relative to the qrc file path
@@ -94,60 +58,131 @@ def isOutdated(src, dst, ui, force):
     return outdated
 
 
-def main():
-    for globExpr, dest in files:
-        for src in glob.glob(globExpr):
-            if not os.path.exists(src):
-                writeMessage('skipping target %s, file not found' % src, 'yellow')
+@click.command(name='pyqt5ac')
+@click.option('--rcc', 'rccPath', default='pyrcc5', help='Path to resource compiler [default: pyrcc5]')
+@click.option('--rcc_options', 'rccOptions', default='',
+              help='Additional options to pass to resource compiler [default: none]')
+@click.option('--uic', 'uicPath', default='pyuic5', help='Path to UI compiler [default: pyuic5]')
+@click.option('--uic_options', 'uicOptions', default='',
+              help='Additional options to pass to UI compiler [default: none]')
+@click.option('--force', default=False, is_flag=True, help='Compile all files regardless of last modification time')
+@click.argument('iopaths', nargs=-1, required=False)
+@click.version_option(__version__)
+def cli(rccPath, rccOptions, uicPath, uicOptions, force, iopaths=()):
+    """Compile PyQt5 UI/QRC files into Python
+
+    IOPATHS argument is a space delineated pair of glob expressions that specify the source files to compile as the
+    first item in the pair and the path of the output compiled file for the second item. Multiple pairs of source and
+    destination paths are allowed in IOPAIRS.
+
+    \b
+    The DST argument supports variables that are replaced based on the target
+    source file:
+        * %%FILENAME%% - Filename of the source file without the extension
+        * %%EXT%% - Extension excluding the period of the file (e.g. ui or qrc)
+        * %%DIRNAME%% - Directory of the source file
+
+    Files that match a given SRC expression are compiled if and only if the file has been modified since the last
+    compilation unless the FORCE flag is set. If the destination file does not exist, then the file is compiled.
+
+    Example:
+
+    \b
+    gui
+        example.ui
+    resources
+        test.qrc
+
+    \b
+    Command:
+    pyqt5ac gui/*.ui generated/%%FILENAME%%_ui.py resources/*.qrc generated/%%FILENAME%%_rc.py
+
+    \b
+    Results in:
+    generated
+        example_ui.py
+        test_rc.py
+    """
+
+    # iopaths is a 1D list containing pairs of the source and destination file expressions
+    # So the list goes something like this:
+    # [sourceFileExpr1, destFileExpr1, sourceFileExpr2, destFileExpr2, sourceFileExpr3, destFileExpr3]
+    #
+    # When calling the main function, it requires that ioPaths be a 2D list with 1st column source file expression and
+    # second column the destination file expression.
+    ioPaths = list(zip(iopaths[::2], iopaths[1::2]))
+
+    main(rccPath, rccOptions, uicPath, uicOptions, force, ioPaths)
+
+
+def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force=False, ioPaths=()):
+    # Loop through the list of io paths
+    for sourceFileExpr, destFileExpr in ioPaths:
+        # Find files that match the source filename expression given
+        for sourceFilename in glob.glob(sourceFileExpr):
+            # If the filename does not exist, not sure why this would ever occur, but show a warning
+            if not os.path.exists(sourceFilename):
+                click.secho('Skipping target %s, file not found' % sourceFilename, fg='yellow')
                 continue
 
-            # Replace any instances of %%DIRNAME%% with the directory that src is contained in
-            # Then get the absolute path for dst and src based on current working directory (cwd)
-            dst = os.path.join(os.getcwd(), dest.replace('%%DIRNAME%%', os.path.dirname(src)))
-            src = os.path.join(os.getcwd(), src)
+            # Split the source filename into directory and basename
+            # Then split the basename into filename and extension
+            #
+            # Ex: C:/Users/addis/Documents/PythonProjects/PATS/gui/mainWindow.ui
+            #   dirname = C:/Users/addis/Documents/PythonProjects/PATS/gui
+            #   basename = mainWindow.ui
+            #   filename = mainWindow
+            #   ext = .ui
+            dirname, basename = os.path.split(sourceFilename)
+            filename, ext = os.path.splitext(basename)
 
-            # Normalize the src/dst paths by removing any relative directories (../ or ./)
-            src, dst = os.path.normpath(src), os.path.normpath(dst)
+            # Replace instances of the variables with the actual values from the source filename
+            destFilename = destFileExpr.replace('%%FILENAME%%', filename) \
+                .replace('%%EXT%%', ext[1:]) \
+                .replace('%%DIRNAME%%', dirname)
 
-            if src.endswith('.ui'):
-                ui = True
-                ext = '_ui.py'
-                cmd = pyuicCmd
-                options = pyuicOptions
-            elif src.endswith('.qrc'):
-                ui = False
-                ext = '_rc.py'
-                cmd = pyrccCmd
-                options = pyrccOptions
+            # Retrieve the absolute path to the source and destination filename
+            sourceFilename, destFilename = os.path.abspath(sourceFilename), os.path.abspath(destFilename)
+
+            if ext == '.ui':
+                isQRCFile = False
+                command = uicPath
+                options = uicOptions
+            elif ext == '.qrc':
+                isQRCFile = True
+                command = rccPath
+                options = rccOptions
             else:
+                click.secho('Unknown target %s found' % sourceFilename, fg='yellow')
                 continue
 
-            filename = os.path.split(src)[1]
-            filename = os.path.splitext(filename)[0]
-            dst = os.path.join(dst, filename + ext)
+            # Create all directories to the destination filename and do nothing if they already exist
+            os.makedirs(os.path.dirname(destFilename), exist_ok=True)
 
-            os.makedirs(os.path.split(dst)[0], exist_ok=True)
+            # If we are force compiling everything or the source file is outdated, then compile, otherwise skip!
+            if force or _isOutdated(sourceFilename, destFilename, isQRCFile):
+                # Builds command string to be run in terminal
+                commandString = _buildCommand(command, options, sourceFilename, destFilename)
 
-            # TODO: Add force parameter
-            if isOutdated(src, dst, ui, False):
+                # Let's try to run the command now!
                 try:
-                    cmd = buildCmd(cmd, options, src, dst)
-                    cmdString = ' '.join(cmd)
-                    subprocess.check_call(cmd, shell=True)
+                    subprocess.check_call(commandString)
                 except subprocess.CalledProcessError as e:
                     if e.output:
-                        writeMessage(cmdString, 'yellow')
-                        writeMessage(e.output.decode(sys.stdout.encoding), 'red')
+                        click.secho(commandString, fg='yellow')
+                        click.secho(e.output.decode(sys.stdout.encoding), fg='red')
                     else:
-                        writeMessage(cmdString, 'red')
+                        click.secho(commandString, fg='red')
                 except OSError as e:
-                    writeMessage(cmdString, 'yellow')
-                    writeMessage(str(e), 'red')
+                    click.secho(commandString, fg='yellow')
+                    click.secho(str(e), fg='red')
                 else:
-                    writeMessage(cmdString, 'green')
+                    click.secho(commandString, fg='green')
             else:
-                writeMessage('skipping %s, up to date' % src)
+                click.secho('Skipping %s, up to date' % filename)
 
 
 if __name__ == '__main__':
-    main()
+    main(ioPaths=(('D:/Users/addis/Documents/PythonProjects/PATS/gui/*.ui',
+                   'D:/Users/addis/Documents/PythonProjects/PATS/generated2/%%FILENAME%%_ui.py'),), force=True)
+    # cli()
