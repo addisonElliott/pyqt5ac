@@ -100,12 +100,12 @@ Take the following file structure as an example project where any UI and QRC fil
 |-- modules
 |   |-- welcome
 |       |-- module.ui
-|       |-- resources
+|       `-- resources
 |           |-- images
 |           `-- module.qrc
 |   `-- dataProbe
 |       |-- module.ui
-|       |-- resources
+|       `-- resources
 |           |-- images
 |           `-- module.qrc
 ```
