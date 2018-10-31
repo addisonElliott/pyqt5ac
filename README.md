@@ -15,7 +15,7 @@ pyqt5ac provides a command-line interface (CLI) that searches through your files
 
 Installing
 ==========
-pyqt5ac is currently available on `PyPi <https://pypi.python.org/pypi/pyqt5ac/>`_. The simplest way to
+pyqt5ac is currently available on [PyPi](https://pypi.python.org/pypi/pyqt5ac/). The simplest way to
 install alone is using ``pip`` at a command line
 
     pip install pyqt5ac
@@ -243,4 +243,4 @@ Pull requests are welcome too!
 
 License
 =================
-pyqt5ac has an MIT-based `license <https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE>`_.
+pyqt5ac has an MIT-based license](https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE).
