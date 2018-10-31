@@ -1,3 +1,2 @@
-colorama
 click
-click-config-file
+pyyaml

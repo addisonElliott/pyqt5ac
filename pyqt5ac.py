@@ -1,10 +1,12 @@
 import glob
+import json
 import os
 import shlex
 import subprocess
 import sys
 
 import click
+import yaml
 
 __version__ = '1.0.0'
 
@@ -20,7 +22,7 @@ def _buildCommand(command, options, sourceFilename, destFilename):
 
     # Construct command string
     commandString = '%s %s -o %s %s' % (
-    shlex.quote(command), options, shlex.quote(destFilename), shlex.quote(sourceFilename))
+        shlex.quote(command), options, shlex.quote(destFilename), shlex.quote(sourceFilename))
 
     # Split command string by spaces
     args = shlex.split(commandString)
@@ -70,10 +72,12 @@ def _isOutdated(src, dst, isQRCFile):
               help='Path to UI compiler [default: pyuic5]')
 @click.option('--uic_options', 'uicOptions', default='',
               help='Additional options to pass to UI compiler [default: none]')
+@click.option('--config', '-c', default='', type=click.Path(exists=True, file_okay=True, dir_okay=False),
+              help='JSON or YAML file containing the configuration parameters')
 @click.option('--force', default=False, is_flag=True, help='Compile all files regardless of last modification time')
 @click.argument('iopaths', nargs=-1, required=False)
 @click.version_option(__version__)
-def cli(rccPath, rccOptions, uicPath, uicOptions, force, iopaths=()):
+def cli(rccPath, rccOptions, uicPath, uicOptions, force, config, iopaths=()):
     """Compile PyQt5 UI/QRC files into Python
 
     IOPATHS argument is a space delineated pair of glob expressions that specify the source files to compile as the
@@ -81,22 +85,24 @@ def cli(rccPath, rccOptions, uicPath, uicOptions, force, iopaths=()):
     destination paths are allowed in IOPAIRS.
 
     \b
-    The DST argument supports variables that are replaced based on the target
-    source file:
+    The destination path argument supports variables that are replaced based on the
+    target source file:
         * %%FILENAME%% - Filename of the source file without the extension
         * %%EXT%% - Extension excluding the period of the file (e.g. ui or qrc)
         * %%DIRNAME%% - Directory of the source file
 
-    Files that match a given SRC expression are compiled if and only if the file has been modified since the last
-    compilation unless the FORCE flag is set. If the destination file does not exist, then the file is compiled.
+    Files that match a given source path expression are compiled if and only if the file has been modified since the
+    last compilation unless the FORCE flag is set. If the destination file does not exist, then the file is compiled.
 
-    Example:
+    A JSON or YAML configuration file path can be specified using the config option. See the GitHub page for example
+    config files.
 
     \b
+    Example:
     gui
-        example.ui
+    --->example.ui
     resources
-        test.qrc
+    --->test.qrc
 
     \b
     Command:
@@ -105,8 +111,10 @@ def cli(rccPath, rccOptions, uicPath, uicOptions, force, iopaths=()):
     \b
     Results in:
     generated
-        example_ui.py
-        test_rc.py
+    --->example_ui.py
+    --->test_rc.py
+
+    Author: Addison Elliott
     """
 
     # iopaths is a 1D list containing pairs of the source and destination file expressions
@@ -117,10 +125,28 @@ def cli(rccPath, rccOptions, uicPath, uicOptions, force, iopaths=()):
     # second column the destination file expression.
     ioPaths = list(zip(iopaths[::2], iopaths[1::2]))
 
-    main(rccPath, rccOptions, uicPath, uicOptions, force, ioPaths)
+    main(rccPath, rccOptions, uicPath, uicOptions, force, config, ioPaths)
 
 
-def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force=False, ioPaths=()):
+def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force=False, config='', ioPaths=()):
+    if config:
+        with open(config, 'r') as fh:
+            if config.endswith('.yml'):
+                # Load YAML file
+                configData = yaml.load(fh)
+            else:
+                # Assume JSON file
+                configData = json.load(fh)
+
+            # configData variable is a dictionary where the keys are the names of the configuration
+            # Load the keys and use the default value if nothing is specified
+            rccPath = configData.get('rcc', rccPath)
+            rccOptions = configData.get('rcc_options', rccOptions)
+            uicPath = configData.get('uic', uicPath)
+            uicOptions = configData.get('uic_options', uicOptions)
+            force = configData.get('force', force)
+            ioPaths = configData.get('ioPaths', ioPaths)
+
     # Loop through the list of io paths
     for sourceFileExpr, destFileExpr in ioPaths:
         # Find files that match the source filename expression given
