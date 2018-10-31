@@ -21,13 +21,13 @@ setup(name='pyqt5ac',
       author_email='addison.elliott@gmail.com',
       url='https://github.com/addisonElliott/pyqt5ac',
       license='MIT License',
-      install_requires=['colorama'],
+      install_requires=['click', 'pyyaml'],
       python_requires='>=3',
       py_modules=['pyqt5ac'],
       entry_points={
           'console_scripts': ['pyqt5ac = pyqt5ac:main']
       },
-      keywords='pyqt pyqt5 qt qt5 qt auto compile generate ui rc pyuic5 pyrcc5',
+      keywords='pyqt pyqt5 qt qt5 qt auto compile generate ui rc pyuic5 pyrcc5 resource designer creator automatic',
       classifiers=[
           'License :: OSI Approved :: MIT License',
           'Topic :: Scientific/Engineering',
