@@ -56,18 +56,13 @@ Whether running via the command line or from a script, the arguments and options
     * %%EXT%% - Extension excluding the period of the file (e.g. ui or qrc)
     * %%DIRNAME%% - Directory of the source file
 
-Example Setup
--------------
-Give an example file structure here of PATS or something and explain what I did.
-TODO Keep going...
-
 Running from Command Line
 =========================
 If pyqt5ac is installed via pip, the command line interface can be called like any Unix based program in the terminal::
 
     pyqt5ac [OPTIONS] [IOPATHS]...
     
-In the interface, the options have slightly different names so reference the help file of the interface for more information. The largest difference is that the ioPaths option is now just a list of space delineated paths where the even items are the source file expression and the odd items are the destination file expression.
+In the interface, the options have slightly different names so reference the help file of the interface for more information. The largest difference is that the ioPaths argument is instead a list of space delineated paths where the even items are the source file expression and the odd items are the destination file expression.
 
 The help file of the interface can be run as::
 
@@ -75,40 +70,165 @@ The help file of the interface can be run as::
 
 Running from Python Script
 ==========================
-XXX
+The following snippet of code below demonstrates how to call pyqt5ac from your Python script:
 
-Example Configuration Files
-===========================
-YAML
-----
+```python
+import pyqt5ac
+
+if debug:
+    pyqt5ac.main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='--from-imports', force=False, 
+                 config='', ioPaths=[['gui/*.ui', 'generated/%%FILENAME%%_ui.py'], 
+                                     ['resources/*.qrc', 'generated/%%FILENAME%%_rc.py']])
+```
+
+Example
+=======
+Take the following file structure as an example project where any UI and QRC files need to be compiled. Assume that pyuic5 and pyrcc5 are located in /usr/bin and that '--from-imports' is desired for the UIC compiler.
+
+```
+├── gui
+|   ├── mainWindow.ui
+|   ├── addDataDialog.ui
+|   └── saveDataDialog.ui
+├── resources
+|   ├── images
+|   ├── stylesheets
+|   ├── app.qrc
+|   └── style.qrc
+├── modules
+|   ├── welcome
+|       ├── module.ui
+|       ├── resources
+|           ├── images
+|           └── module.qrc
+|   └── dataProbe
+|       ├── module.ui
+|       ├── resources
+|           ├── images
+|           └── module.qrc
+```
+
+The sections below demonstrate how to setup pyqt5ac to compile the necssary files given the file structure above.
+
+Option 1: YAML Config File (Recommended)
+---------------------------------------
 ```YAML
 ioPaths:
   -
-    - "D:/Users/addis/Documents/PythonProjects/PATS/gui/*.ui"
-    - "%%DIRNAME%%/../generated/%%FILENAME%%_ui.py"
+    - "gui/*.ui"
+    - "generated/%%FILENAME%%_ui.py"
   -
-    - "D:/Users/addis/Documents/PythonProjects/PATS/resources/*.qrc"
-    - "D:/Users/addis/Documents/PythonProjects/PATS/generated/%%FILENAME_%%EXT%%.py"
+    - "resources/*.qrc"
+    - "generated/%%FILENAME_%%EXT%%.py"
+  -
+    - "modules/*/*.ui"
+    - "%%DIRNAME%%/generated/%%FILENAME_ui.py"
+  -
+    - "modules/*/resources/*.qrc"
+    - "%%DIRNAME%%/generated/%%FILENAME%%_rc.py"
 
-rcc: pyrcc5
-uic: pyuic5
+rcc: /usr/bin/pyrcc5
+uic: /usr/bin/pyuic5
 uic_options: --from-imports
-force: True
+force: False
 ```
 
-JSON
-----
+Now run pyqt5ac from the command line or Python script using your config file:
+```bash
+pyqt5ac --config config.yml
+```
+
+or
+```python
+import pyqt5ac
+
+pyqt5ac.main(config='config.yml')
+```
+
+Option 2: JSON Config File (Recommended)
+---------------------------------------
 ```JSON
 {
   "ioPaths": [
-    ["D:/Users/addis/Documents/PythonProjects/PATS/gui/*.ui", "%%DIRNAME%%/../generated4/%%FILENAME%%_ui.py"]
+    ["gui/*.ui", "generated/%%FILENAME%%_ui.py"],
+    ["resources/*.qrc", "generated/%%FILENAME%%_rc.py"],
+    ["modules/*/*.ui", "%%DIRNAME%%/generated/%%FILENAME%%_ui.py"],
+    ["modules/*/resources/*.qrc", "%%DIRNAME%%/generated/%%FILENAME%%_rc.py"]
   ],
-  "rcc": "pyrcc5",
+  "rcc": "/usr/bin/pyrcc5",
   "rcc_options": "",
-  "uic": "pyuic5",
+  "uic": "/usr/bin/pyuic5",
   "uic_options": "--from-imports",
-  "force": true
+  "force": false
 }
+```
+
+Now run pyqt5ac from the command line or Python script using your config file:
+```bash
+pyqt5ac --config config.yml
+```
+
+or
+```python
+import pyqt5ac
+
+pyqt5ac.main(config='config.yml')
+```
+
+Option 3: Python Script
+-----------------------
+```python
+import pyqt5ac
+
+pyqt5ac.main(rccPath='/usr/bin/pyrcc5', uicPath='/usr/bin/pyuic5', uicOptions='--from-imports', force=False, ioPaths=[
+        ['gui/*.ui', 'generated/%%FILENAME%%_ui.py'],
+        ['resources/*.qrc', 'generated/%%FILENAME%%_rc.py'],
+        ['modules/*/*.ui', '%%DIRNAME%%/generated/%%FILENAME%%_ui.py'],
+        ['modules/*/resources/*.qrc', '%%DIRNAME%%/generated/%%FILENAME%%_rc.py']
+    ])
+```
+
+Option 4: Command Line
+----------------------
+```bash
+pyqt5ac --rcc /usr/bin/pyrcc5 --uic /usr/bin/pyuic5 --uic_options "--from-imports" gui/*.ui generated/%%FILENAME%%_ui.py resources/*.qrc generated/%%FILENAME%%_rc.py modules/*/*.ui %%DIRNAME%%/generated/%%FILENAME%%_ui.py modules/*/resources/*.qrc %%DIRNAME%%/generated/%%FILENAME%%_rc.py
+```
+
+Resulting File Structure
+------------------------
+```
+├── gui
+|   ├── mainWindow.ui
+|   ├── addDataDialog.ui
+|   └── saveDataDialog.ui
+├── resources
+|   ├── images
+|   ├── stylesheets
+|   ├── app.qrc
+|   └── style.qrc
+├── generated
+|   ├── mainWindow_ui.py
+|   ├── addDataDialog_ui.py
+|   ├── saveDataDialog_ui.py
+|   ├── app_rc.py
+|   └── style_rc.py
+├── modules
+|   ├── welcome
+|       ├── module.ui
+|       ├── resources
+|           ├── images
+|           └── module.qrc
+|       └── generated
+|           ├── module_ui.py
+|           └── module_rc.py
+|   └── dataProbe
+|       ├── module.ui
+|       ├── resources
+|           ├── images
+|           └── module.qrc
+|       └── generated
+|           ├── module_ui.py
+|           └── module_rc.py
 ```
 
 License
