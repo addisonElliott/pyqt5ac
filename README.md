@@ -5,7 +5,7 @@ pyqt5ac is a Python package for automatically compiling Qt's UI and QRC files in
 In PyQt5, [Qt Designer](https://www.qt.io/) is the application used to create a GUI using a drag-and-drop interface. This interface is stored in a *.ui* file and any resources such as images or icons are stored in a *.qrc* file.
 
 These two filetypes must be compiled into Python files before they can be used in your Python program. There are a few ways to go about this currently:
-1. Manually compile the files using the command line and pyuic5 for *.ui* files and pyrcc for *.qrc* files.
+1. Manually compile the files using the command line and pyuic5 for *.ui* files and pyrcc5 for *.qrc* files.
 2. Compile the files each time the application is started up by calling pyuic5 and pyrcc5 within your Python script
 
 The downside to the first method is that it can be a tedious endeavor to compile the files, especially when one is faced with a larger project with many of these files that need to be compiled. Although the second method eliminates the tediousness of compilation, these files are compiled **every** time you run your script, regardless of if anything has been changed. This can cause a hit in performance and take longer to startup your script.
