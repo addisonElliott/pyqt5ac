@@ -58,19 +58,19 @@ Whether running via the command line or from a script, the arguments and options
 
 Running from Command Line
 =========================
-If pyqt5ac is installed via pip, the command line interface can be called like any Unix based program in the terminal::
+If pyqt5ac is installed via pip, the command line interface can be called like any Unix based program in the terminal
 
     pyqt5ac [OPTIONS] [IOPATHS]...
     
 In the interface, the options have slightly different names so reference the help file of the interface for more information. The largest difference is that the ioPaths argument is instead a list of space delineated paths where the even items are the source file expression and the odd items are the destination file expression.
 
-The help file of the interface can be run as::
+The help file of the interface can be run as
 
     pyqt5ac --help
 
 Running from Python Script
 ==========================
-The following snippet of code below demonstrates how to call pyqt5ac from your Python script:
+The following snippet of code below demonstrates how to call pyqt5ac from your Python script
 
 ```python
 import pyqt5ac
