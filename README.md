@@ -88,26 +88,26 @@ Example
 Take the following file structure as an example project where any UI and QRC files need to be compiled. Assume that pyuic5 and pyrcc5 are located in /usr/bin and that '--from-imports' is desired for the UIC compiler.
 
 ```
-├── gui
-|   ├── mainWindow.ui
-|   ├── addDataDialog.ui
-|   └── saveDataDialog.ui
-├── resources
-|   ├── images
-|   ├── stylesheets
-|   ├── app.qrc
-|   └── style.qrc
-├── modules
-|   ├── welcome
-|       ├── module.ui
-|       ├── resources
-|           ├── images
-|           └── module.qrc
-|   └── dataProbe
-|       ├── module.ui
-|       ├── resources
-|           ├── images
-|           └── module.qrc
+|-- gui
+|   |-- mainWindow.ui
+|   |-- addDataDialog.ui
+|   `-- saveDataDialog.ui
+|-- resources
+|   |-- images
+|   |-- stylesheets
+|   |-- app.qrc
+|   `-- style.qrc
+|-- modules
+|   |-- welcome
+|       |-- module.ui
+|       |-- resources
+|           |-- images
+|           `-- module.qrc
+|   `-- dataProbe
+|       |-- module.ui
+|       |-- resources
+|           |-- images
+|           `-- module.qrc
 ```
 
 The sections below demonstrate how to setup pyqt5ac to compile the necssary files given the file structure above.
@@ -199,38 +199,38 @@ pyqt5ac --rcc /usr/bin/pyrcc5 --uic /usr/bin/pyuic5 --uic_options "--from-import
 Resulting File Structure
 ------------------------
 ```
-├── gui
-|   ├── mainWindow.ui
-|   ├── addDataDialog.ui
-|   └── saveDataDialog.ui
-├── resources
-|   ├── images
-|   ├── stylesheets
-|   ├── app.qrc
-|   └── style.qrc
-├── generated
-|   ├── mainWindow_ui.py
-|   ├── addDataDialog_ui.py
-|   ├── saveDataDialog_ui.py
-|   ├── app_rc.py
-|   └── style_rc.py
-├── modules
-|   ├── welcome
-|       ├── module.ui
-|       ├── resources
-|           ├── images
-|           └── module.qrc
-|       └── generated
-|           ├── module_ui.py
-|           └── module_rc.py
-|   └── dataProbe
-|       ├── module.ui
-|       ├── resources
-|           ├── images
-|           └── module.qrc
-|       └── generated
-|           ├── module_ui.py
-|           └── module_rc.py
+|-- gui
+|   |-- mainWindow.ui
+|   |-- addDataDialog.ui
+|   `-- saveDataDialog.ui
+|-- resources
+|   |-- images
+|   |-- stylesheets
+|   |-- app.qrc
+|   `-- style.qrc
+|-- generated
+|   |-- mainWindow_ui.py
+|   |-- addDataDialog_ui.py
+|   |-- saveDataDialog_ui.py
+|   |-- app_rc.py
+|   `-- style_rc.py
+|-- modules
+|   |-- welcome
+|       |-- module.ui
+|       |-- resources
+|           |-- images
+|           `-- module.qrc
+|       `-- generated
+|           |-- module_ui.py
+|           `-- module_rc.py
+|   `-- dataProbe
+|       |-- module.ui
+|       |-- resources
+|           |-- images
+|           `-- module.qrc
+|       `-- generated
+|           |-- module_ui.py
+|           `-- module_rc.py
 ```
 
 Support
