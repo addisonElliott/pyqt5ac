@@ -38,7 +38,7 @@ setup(name='pyqt5ac',
       python_requires='>=3',
       py_modules=['pyqt5ac'],
       entry_points={
-          'console_scripts': ['pyqt5ac = pyqt5ac:main']
+          'console_scripts': ['pyqt5ac = pyqt5ac:cli']
       },
       keywords='pyqt pyqt5 qt qt5 qt auto compile generate ui rc pyuic5 pyrcc5 resource designer creator automatic',
       classifiers=[
