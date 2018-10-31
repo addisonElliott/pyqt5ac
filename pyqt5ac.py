@@ -19,7 +19,7 @@ def _buildCommand(command, options, sourceFilename, destFilename):
     """
 
     # Construct command string
-    commandString = '%s %s -o %s %s' % (command, options, shlex.quote(destFilename), shlex.quote(sourceFilename))
+    commandString = '%s %s -o %s %s' % (shlex.quote(command), options, shlex.quote(destFilename), shlex.quote(sourceFilename))
 
     # Split command string by spaces
     args = shlex.split(commandString)
@@ -119,7 +119,7 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
     # Loop through the list of io paths
     for sourceFileExpr, destFileExpr in ioPaths:
         # Find files that match the source filename expression given
-        for sourceFilename in glob.glob(sourceFileExpr):
+        for sourceFilename in glob.glob(sourceFileExpr, recursive=True):
             # If the filename does not exist, not sure why this would ever occur, but show a warning
             if not os.path.exists(sourceFilename):
                 click.secho('Skipping target %s, file not found' % sourceFilename, fg='yellow')
@@ -183,6 +183,4 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
 
 
 if __name__ == '__main__':
-    main(ioPaths=(('D:/Users/addis/Documents/PythonProjects/PATS/gui/*.ui',
-                   'D:/Users/addis/Documents/PythonProjects/PATS/generated2/%%FILENAME%%_ui.py'),), force=True)
-    # cli()
+    cli()
