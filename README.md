@@ -41,24 +41,9 @@ the updated polarTransform code.
 
 Getting Started
 ===============
-All of the options that can be specified to pyqt5ac can also be placed in a configuration file (JSON or YAML). My recommendation is to use a configuration file to allow easy compilation of your software. For testing purposes, I would use the options in the command line interface to make get everything working and then transcribe that into a configuration file for repeated use.
-
-Configuration Options
----------------------
-Whether running via the command line or from a script, the arguments and options that can be given are the same. The valid options are:
-* **rccPath** - Path to the resource compiler. Default is pyrcc5 and assumes pyrcc5 is in the PATH.
-* **rccOptions** - Additional options to pass to the resource compiler. See the man page of pyrcc5 for more information on options. An example of a valid option would be "-compress 1". Default is to pass no options.
-* **uicPath** - Path to the resource compiler. Default is pyuic5 and assumes pyuic5 is in the PATH.
-* **uicOptions** - Additional options to pass to the UI compiler. See the man page of pyuic5 for more information on options. An example of a valid option would be '--from-imports'. Default is to pass no options.
-* **force** - Specifies whether to force compile all of the files found. The default is false which means only outdated files will be compiled.
-* **config** - JSON or YAML configuration file that contains information about these parameters.
-* **ioPaths** - This is a 2D list containing information about what source files to compile and where to place the source files. The first column is the source file global expression (meaning you can use wildcards, ** for recursive folder search, ? for options, etc to match filenames) and the second column is the destination file expression. The destination file expression can these 'special' variables that will be replaced with information from the source filename:
-    * %%FILENAME%% - Filename of the source file without the extension
-    * %%EXT%% - Extension excluding the period of the file (e.g. ui or qrc)
-    * %%DIRNAME%% - Directory of the source file
 
 Running from Command Line
-=========================
+-------------------------
 If pyqt5ac is installed via pip, the command line interface can be called like any Unix based program in the terminal
 
     pyqt5ac [OPTIONS] [IOPATHS]...
@@ -70,7 +55,7 @@ The help file of the interface can be run as
     pyqt5ac --help
 
 Running from Python Script
-==========================
+--------------------------
 The following snippet of code below demonstrates how to call pyqt5ac from your Python script
 
 ```python
@@ -81,6 +66,22 @@ if debug:
                  config='', ioPaths=[['gui/*.ui', 'generated/%%FILENAME%%_ui.py'], 
                                      ['resources/*.qrc', 'generated/%%FILENAME%%_rc.py']])
 ```
+
+Configuration Options
+=====================
+All of the options that can be specified to pyqt5ac can also be placed in a configuration file (JSON or YAML). My recommendation is to use a configuration file to allow easy compilation of your software. For testing purposes, I would use the options in the command line interface to make get everything working and then transcribe that into a configuration file for repeated use.
+
+Whether running via the command line or from a script, the arguments and options that can be given are the same. The valid options are:
+* **rccPath** - Path to the resource compiler. Default is pyrcc5 and assumes pyrcc5 is in the PATH.
+* **rccOptions** - Additional options to pass to the resource compiler. See the man page of pyrcc5 for more information on options. An example of a valid option would be "-compress 1". Default is to pass no options.
+* **uicPath** - Path to the resource compiler. Default is pyuic5 and assumes pyuic5 is in the PATH.
+* **uicOptions** - Additional options to pass to the UI compiler. See the man page of pyuic5 for more information on options. An example of a valid option would be '--from-imports'. Default is to pass no options.
+* **force** - Specifies whether to force compile all of the files found. The default is false which means only outdated files will be compiled.
+* **config** - JSON or YAML configuration file that contains information about these parameters.
+* **ioPaths** - This is a 2D list containing information about what source files to compile and where to place the source files. The first column is the source file global expression (meaning you can use wildcards, ** for recursive folder search, ? for options, etc to match filenames) and the second column is the destination file expression. The destination file expression can these 'special' variables that will be replaced with information from the source filename:
+    * %%FILENAME%% - Filename of the source file without the extension
+    * %%EXT%% - Extension excluding the period of the file (e.g. ui or qrc)
+    * %%DIRNAME%% - Directory of the source file
 
 Example
 =======
