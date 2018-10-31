@@ -15,23 +15,23 @@ Enter *pyqt5ac*! This command-line interface (CLI), given a set of parameters, w
 Installing
 ==========
 pyqt5ac is currently available on `PyPi <https://pypi.python.org/pypi/pyqt5ac/>`_. The simplest way to
-install alone is using ``pip`` at a command line::
+install alone is using ``pip`` at a command line
 
     pip install pyqt5ac
 
 which installs the latest release.  To install the latest code from the repository (usually stable, but may have
-undocumented changes or bugs)::
+undocumented changes or bugs)
 
     pip install git+https://github.com/addisonElliott/pyqt5ac.git
 
 For developers, you can clone the pyqt5ac repository and run the ``setup.py`` file. Use the following commands to get
-a copy from GitHub and install all dependencies::
+a copy from GitHub and install all dependencies
 
     git clone pip install git+https://github.com/addisonElliott/pyqt5ac.git
     cd pyqt5ac
     pip install .
 
-or, for the last line, instead use::
+or, for the last line, instead use
 
     pip install -e .
 
