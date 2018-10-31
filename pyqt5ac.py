@@ -19,7 +19,8 @@ def _buildCommand(command, options, sourceFilename, destFilename):
     """
 
     # Construct command string
-    commandString = '%s %s -o %s %s' % (shlex.quote(command), options, shlex.quote(destFilename), shlex.quote(sourceFilename))
+    commandString = '%s %s -o %s %s' % (
+    shlex.quote(command), options, shlex.quote(destFilename), shlex.quote(sourceFilename))
 
     # Split command string by spaces
     args = shlex.split(commandString)
@@ -59,10 +60,14 @@ def _isOutdated(src, dst, isQRCFile):
 
 
 @click.command(name='pyqt5ac')
-@click.option('--rcc', 'rccPath', default='pyrcc5', help='Path to resource compiler [default: pyrcc5]')
+@click.option('--rcc', 'rccPath', default='pyrcc5',
+              type=click.Path(exists=False, file_okay=True, dir_okay=False),
+              help='Path to resource compiler [default: pyrcc5]')
 @click.option('--rcc_options', 'rccOptions', default='',
               help='Additional options to pass to resource compiler [default: none]')
-@click.option('--uic', 'uicPath', default='pyuic5', help='Path to UI compiler [default: pyuic5]')
+@click.option('--uic', 'uicPath', default='pyuic5',
+              type=click.Path(exists=False, file_okay=True, dir_okay=False),
+              help='Path to UI compiler [default: pyuic5]')
 @click.option('--uic_options', 'uicOptions', default='',
               help='Additional options to pass to UI compiler [default: none]')
 @click.option('--force', default=False, is_flag=True, help='Compile all files regardless of last modification time')
