@@ -1,3 +1,7 @@
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt5ac.svg)](https://pypi.org/project/pyqt5ac/)
+[![PyPI](https://img.shields.io/pypi/v/pyqt5ac.svg)](https://pypi.org/project/pyqt5ac/)
+[![PyPI - License](https://img.shields.io/pypi/l/pyqt5ac.svg)](https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE)
+
 PyQt5 Auto Compiler (pyqt5ac)
 =============================
 pyqt5ac is a Python package for automatically compiling Qt's UI and QRC files into Python files.
@@ -243,4 +247,4 @@ Pull requests are welcome too!
 
 License
 =================
-pyqt5ac has an MIT-based license](https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE).
+pyqt5ac has an [MIT-based license](https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE).
