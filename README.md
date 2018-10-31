@@ -1,5 +1,5 @@
 PyQt5 Auto Compiler (pyqt5ac)
-=================
+=============================
 pyqt5ac is a Python package for automatically compiling Qt's UI and QRC files into Python files.
 
 In PyQt5, [Qt Designer](https://www.qt.io/) is the application used to create a GUI using a drag-and-drop interface. This interface is stored in a *.ui* file and any resources such as images or icons are stored in a *.qrc* file.
@@ -13,9 +13,7 @@ The downside to the first method is that it can be a tedious endeavor to compile
 Enter *pyqt5ac*! This command-line interface (CLI), given a set of parameters, will search through your files and automatically compile any *.ui* or *.qrc* files. In addition, pyqt5ac can be called from your Python script. In both instances, **ui and resource files are only compiled if they have been updated**.
 
 Installing
-=================
-Installing pyqt5ac
--------------------------
+==========
 pyqt5ac is currently available on `PyPi <https://pypi.python.org/pypi/pyqt5ac/>`_. The simplest way to
 install alone is using ``pip`` at a command line::
 
@@ -42,7 +40,7 @@ the updated polarTransform code.
 
 Getting Started
 ===============
-All of the options that can be specified to pyqt5ac can also be placed in a configuration file (JSON or YAML). My recommendation is to use a configuration file to allow easy compilation of your software. For testing purposes, I would use the options in the command line interface to make sure everything works and then transcribe that into a configuration file for repeated use.
+All of the options that can be specified to pyqt5ac can also be placed in a configuration file (JSON or YAML). My recommendation is to use a configuration file to allow easy compilation of your software. For testing purposes, I would use the options in the command line interface to make get everything working and then transcribe that into a configuration file for repeated use.
 
 Configuration Options
 ---------------------
@@ -64,7 +62,7 @@ Give an example file structure here of PATS or something and explain what I did.
 TODO Keep going...
 
 Running from Command Line
-=================
+=========================
 If pyqt5ac is installed via pip, the command line interface can be called like any Unix based program in the terminal::
 
     pyqt5ac [OPTIONS] [IOPATHS]...
@@ -76,13 +74,13 @@ The help file of the interface can be run as::
     pyqt5ac --help
 
 Running from Python Script
-=================
+==========================
 XXX
 
 Example Configuration Files
-=================
+===========================
 YAML
------------------
+----
 ```YAML
 ioPaths:
   -
@@ -99,7 +97,7 @@ force: True
 ```
 
 JSON
------------------
+----
 ```JSON
 {
   "ioPaths": [
