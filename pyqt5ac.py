@@ -149,12 +149,16 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
 
     # Loop through the list of io paths
     for sourceFileExpr, destFileExpr in ioPaths:
+        foundItem = False
+
         # Find files that match the source filename expression given
         for sourceFilename in glob.glob(sourceFileExpr, recursive=True):
             # If the filename does not exist, not sure why this would ever occur, but show a warning
             if not os.path.exists(sourceFilename):
                 click.secho('Skipping target %s, file not found' % sourceFilename, fg='yellow')
                 continue
+
+            foundItem = True
 
             # Split the source filename into directory and basename
             # Then split the basename into filename and extension
@@ -212,6 +216,8 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
             else:
                 click.secho('Skipping %s, up to date' % filename)
 
+        if not foundItem:
+            click.secho('No items found in %s' % sourceFileExpr)
 
 if __name__ == '__main__':
     cli()
