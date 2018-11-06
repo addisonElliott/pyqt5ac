@@ -7,6 +7,7 @@ import sys
 
 import click
 import yaml
+import platform
 
 __version__ = '1.0.1'
 
@@ -201,7 +202,10 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
 
                 # Let's try to run the command now!
                 try:
-                    subprocess.check_call(commandString)
+                    # On Windows, shell must be set to True to search through the PATH environment variable when
+                    # searching for a program. See here:
+                    # https://stackoverflow.com/questions/3022013/windows-cant-find-the-file-on-subprocess-call
+                    subprocess.check_call(commandString, shell=(platform.system() == 'Windows'))
                 except subprocess.CalledProcessError as e:
                     if e.output:
                         click.secho(commandString, fg='yellow')
