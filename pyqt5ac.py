@@ -9,7 +9,7 @@ import click
 import yaml
 import platform
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 # Takes command, options, source and destination folders and creates a command from it
