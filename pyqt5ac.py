@@ -63,12 +63,12 @@ def _isOutdated(src, dst, isQRCFile):
 
 
 @click.command(name='pyqt5ac')
-@click.option('--rcc', 'rccPath', default='pyrcc5',
+@click.option('--rcc', 'rccPath', default='pyrcc5', envvar='PYQT5AC_RCC',
               type=click.Path(exists=False, file_okay=True, dir_okay=False),
               help='Path to resource compiler [default: pyrcc5]')
 @click.option('--rcc_options', 'rccOptions', default='',
               help='Additional options to pass to resource compiler [default: none]')
-@click.option('--uic', 'uicPath', default='pyuic5',
+@click.option('--uic', 'uicPath', default='pyuic5', envvar='PYQT5AC_UIC',
               type=click.Path(exists=False, file_okay=True, dir_okay=False),
               help='Path to UI compiler [default: pyuic5]')
 @click.option('--uic_options', 'uicOptions', default='',
