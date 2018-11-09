@@ -7,29 +7,31 @@ import sys
 
 import click
 import yaml
-import platform
 
 __version__ = '1.0.2'
 
 
-# Takes command, options, source and destination folders and creates a command from it
-# Escapes the src/dst and removes any additional whitespace
-def _buildCommand(command, options, sourceFilename, destFilename):
-    """Build PyQt5 command line string based on the command, options and arguments
+# Takes information about command and creates an argument list from it
+# In addition to an argument list, a 'cleaner' string is returned to be shown to the user
+# This essentially replaces 'python -m XXX' with the command parameter
+def _buildCommand(module, command, options, sourceFilename, destFilename):
+    # Split options string into a list of options that is space-delineated
+    # shlex.split is used rather than str.split to follow common shell rules such as strings in quotes are considered
+    # one argument, even with spaces
+    optionsList = shlex.split(options)
 
-    String follows the syntax:
-        <command> <options> -o destFilename sourceFilename
-    """
+    # List of arguments with the first argument being the command to run
+    # This is the argument list that will be actually ran by using sys.executable to get the current Python executable
+    # running this program.
+    argList = [sys.executable, '-m', module] + optionsList + ['-o', destFilename, sourceFilename]
 
-    # Construct command string
-    commandString = '%s %s -o %s %s' % (
-        shlex.quote(command), options, shlex.quote(destFilename), shlex.quote(sourceFilename))
+    # However, for showing the user what command was ran, we will replace the 'python -m XXX' with pyuic5 or pyrcc5 to
+    # make it look cleaner
+    # Create one command string by escaping each argument and joining together with spaces
+    cleanArgList = [command] + argList[3:]
+    commandString = ' '.join([shlex.quote(arg) for arg in cleanArgList])
 
-    # Split command string by spaces
-    args = shlex.split(commandString)
-
-    # Remove any blank arguments meaning there were double spaces in the command string and then rejoin the args
-    return ' '.join([arg for arg in args if arg])
+    return argList, commandString
 
 
 def _isOutdated(src, dst, isQRCFile):
@@ -63,14 +65,8 @@ def _isOutdated(src, dst, isQRCFile):
 
 
 @click.command(name='pyqt5ac')
-@click.option('--rcc', 'rccPath', default='pyrcc5', envvar='PYQT5AC_RCC',
-              type=click.Path(exists=False, file_okay=True, dir_okay=False),
-              help='Path to resource compiler [default: pyrcc5]')
 @click.option('--rcc_options', 'rccOptions', default='',
               help='Additional options to pass to resource compiler [default: none]')
-@click.option('--uic', 'uicPath', default='pyuic5', envvar='PYQT5AC_UIC',
-              type=click.Path(exists=False, file_okay=True, dir_okay=False),
-              help='Path to UI compiler [default: pyuic5]')
 @click.option('--uic_options', 'uicOptions', default='',
               help='Additional options to pass to UI compiler [default: none]')
 @click.option('--config', '-c', default='', type=click.Path(exists=True, file_okay=True, dir_okay=False),
@@ -78,12 +74,12 @@ def _isOutdated(src, dst, isQRCFile):
 @click.option('--force', default=False, is_flag=True, help='Compile all files regardless of last modification time')
 @click.argument('iopaths', nargs=-1, required=False)
 @click.version_option(__version__)
-def cli(rccPath, rccOptions, uicPath, uicOptions, force, config, iopaths=()):
+def cli(rccOptions, uicOptions, force, config, iopaths=()):
     """Compile PyQt5 UI/QRC files into Python
 
     IOPATHS argument is a space delineated pair of glob expressions that specify the source files to compile as the
     first item in the pair and the path of the output compiled file for the second item. Multiple pairs of source and
-    destination paths are allowed in IOPAIRS.
+    destination paths are allowed in IOPATHS.
 
     \b
     The destination path argument supports variables that are replaced based on the
@@ -126,10 +122,10 @@ def cli(rccPath, rccOptions, uicPath, uicOptions, force, config, iopaths=()):
     # second column the destination file expression.
     ioPaths = list(zip(iopaths[::2], iopaths[1::2]))
 
-    main(rccPath, rccOptions, uicPath, uicOptions, force, config, ioPaths)
+    main(rccOptions, uicOptions, force, config, ioPaths)
 
 
-def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force=False, config='', ioPaths=()):
+def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=()):
     if config:
         with open(config, 'r') as fh:
             if config.endswith('.yml'):
@@ -141,9 +137,7 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
 
             # configData variable is a dictionary where the keys are the names of the configuration
             # Load the keys and use the default value if nothing is specified
-            rccPath = configData.get('rcc', rccPath)
             rccOptions = configData.get('rcc_options', rccOptions)
-            uicPath = configData.get('uic', uicPath)
             uicOptions = configData.get('uic_options', uicOptions)
             force = configData.get('force', force)
             ioPaths = configData.get('ioPaths', ioPaths)
@@ -182,11 +176,13 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
 
             if ext == '.ui':
                 isQRCFile = False
-                command = uicPath
+                module = 'PyQt5.uic.pyuic'
+                command = 'pyuic5'
                 options = uicOptions
             elif ext == '.qrc':
                 isQRCFile = True
-                command = rccPath
+                module = 'PyQt5.pyrcc_main'
+                command = 'pyrcc5'
                 options = rccOptions
             else:
                 click.secho('Unknown target %s found' % sourceFilename, fg='yellow')
@@ -197,31 +193,26 @@ def main(rccPath='pyrcc5', rccOptions='', uicPath='pyuic5', uicOptions='', force
 
             # If we are force compiling everything or the source file is outdated, then compile, otherwise skip!
             if force or _isOutdated(sourceFilename, destFilename, isQRCFile):
-                # Builds command string to be run in terminal
-                commandString = _buildCommand(command, options, sourceFilename, destFilename)
+                argList, commandString = _buildCommand(module, command, options, sourceFilename, destFilename)
 
-                # Let's try to run the command now!
-                try:
-                    # On Windows, shell must be set to True to search through the PATH environment variable when
-                    # searching for a program. See here:
-                    # https://stackoverflow.com/questions/3022013/windows-cant-find-the-file-on-subprocess-call
-                    subprocess.check_call(commandString, shell=(platform.system() == 'Windows'))
-                except subprocess.CalledProcessError as e:
-                    if e.output:
-                        click.secho(commandString, fg='yellow')
-                        click.secho(e.output.decode(sys.stdout.encoding), fg='red')
-                    else:
-                        click.secho(commandString, fg='red')
-                except OSError as e:
-                    click.secho(commandString, fg='yellow')
-                    click.secho(str(e), fg='red')
-                else:
+                commandResult = subprocess.run(argList, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                if commandResult.returncode == 0:
                     click.secho(commandString, fg='green')
+                else:
+                    if commandResult.stderr:
+                        click.secho(commandString, fg='yellow')
+                        click.secho(commandResult.stderr.decode(), fg='red')
+                    else:
+                        click.secho(commandString, fg='yellow')
+                        click.secho('Command returned with non-zero exit status %i' % commandResult.returncode,
+                                    fg='red')
             else:
                 click.secho('Skipping %s, up to date' % filename)
 
         if not foundItem:
             click.secho('No items found in %s' % sourceFileExpr)
+
 
 if __name__ == '__main__':
     cli()
