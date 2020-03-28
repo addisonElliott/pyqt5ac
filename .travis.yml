@@ -1,0 +1,33 @@
+language: python
+
+python:
+- 3.8
+
+# Command to install dependencies
+install:
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+script: ignore
+
+# Command to deploy releases to PyPi
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: addisonElliott
+  on:
+    tags: true
+  password:
+    secure: "fy0LighFAcoTHwIgLQVT9/4VKD43t10i6tlk3wjAacECIswkNdvI/cB9xDyDPGBNEmWQ9UBQMDi6pSk0OjcFRi0ndKPnCSfgxX1b6XnXi8m0vE7Pw/q/wHJX+ahlXGv+X3m/pIH6ooZ3U8thQECtqE/i/FFqdQ0Y69h+N7d0GdePL72D+CYZR/xMlXiLh0SPlmBw21PM
+ukRkRdaN7sUj0rZnnjR0rYlSc+1KTfNLrQwQsNFm3Yx/UvoEK/cWaykuhn3RdI9tOQeBrgZ7KKPFo021CUefQW9ndpqNI6Q5eP3Lb4tmf/JcrNX0l5a3gkqjq5yPkuiSkzh0kzdvHYLIzXI5GO+XFEdhUn9jCq1DX1FrCaPXaW1QKzxQmDa9W+qF2IF4+CsauY1m25BEgmaMkRMxiVA
+Butb0rv9Dv1lR6sY9P6bsFKy1PDGa7U1VYVXuCToOVK6Mq/PDROppGYwirxJgXQ87XcPqOocLOgF998zCag4ahioymmAoch7W6P+zcStbU8mOgJ9xGjsiuNuzmWVgVd7uGgyyVuaj13sBYRGcatbLCHPk8UIHIwmGqgGZkTwFp50/6a97T3jeFNYhMJBZcGiTuvHZBR4Yo+t23jayZO
+l4BU0iQf2osejZuJt6JGn+m1cxA2bbeIGt9OXqMPwUJwP9MFNbT8/LdjR555Q="
+
+after_success:
+  - codecov
+
+# Only build for master branch and tagged released (must follow semantic versioning syntax)
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
