@@ -125,10 +125,10 @@ ioPaths:
     - "generated/%%FILENAME%%_ui.py"
   -
     - "resources/*.qrc"
-    - "generated/%%FILENAME_%%EXT%%.py"
+    - "generated/%%FILENAME_%%%%EXT%%.py"
   -
     - "modules/*/*.ui"
-    - "%%DIRNAME%%/generated/%%FILENAME_ui.py"
+    - "%%DIRNAME%%/generated/%%FILENAME%%_ui.py"
   -
     - "modules/*/resources/*.qrc"
     - "%%DIRNAME%%/generated/%%FILENAME%%_rc.py"
