@@ -1,15 +1,11 @@
 import os
 import time
 
+from .. import pyqt5ac
+
 
 def _is_gitlab_ci():
     return os.getenv("GITLAB_CI") is not None
-
-
-if _is_gitlab_ci():
-    import pyqt5ac
-else:
-    from .. import pyqt5ac
 
 
 def _assert_path_exists(expected_path):
