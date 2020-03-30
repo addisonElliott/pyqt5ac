@@ -149,7 +149,7 @@ import pyqt5ac
 pyqt5ac.main(config='config.yml')
 ```
 
-Option 2: JSON Config File (Recommended)
+Option 2: JSON Config File (Deprecated)
 ---------------------------------------
 ```JSON
 {
