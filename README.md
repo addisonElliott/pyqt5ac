@@ -1,5 +1,5 @@
-[![pipeline status](https://gitlab.com/zkovari/pyqt5ac-mirror/badges/master/pipeline.svg)](https://gitlab.com/zkovari/pyqt5ac-mirror/-/commits/master)
-[![coverage report](https://gitlab.com/zkovari/pyqt5ac-mirror/badges/master/coverage.svg)](https://gitlab.com/zkovari/pyqt5ac-mirror/-/commits/master)
+[![pipeline status](https://gitlab.com/zkovari/pyqt5ac/badges/master/pipeline.svg)](https://gitlab.com/zkovari/pyqt5ac/-/commits/master)
+[![coverage report](https://gitlab.com/zkovari/pyqt5ac/badges/master/coverage.svg)](https://gitlab.com/zkovari/pyqt5ac/-/commits/master)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt5ac.svg)](https://pypi.org/project/pyqt5ac/)
 [![PyPI](https://img.shields.io/pypi/v/pyqt5ac.svg)](https://pypi.org/project/pyqt5ac/)
 [![PyPI - License](https://img.shields.io/pypi/l/pyqt5ac.svg)](https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE)
