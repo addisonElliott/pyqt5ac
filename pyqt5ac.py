@@ -125,7 +125,21 @@ def cli(rccOptions, uicOptions, force, config, iopaths=()):
     main(rccOptions, uicOptions, force, config, ioPaths)
 
 
-def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=()):
+def replaceVariables(variables_definition, string_with_variables):
+    """
+    Performa the variable replacement into thr path's string
+    :param variables_definition: mapping variable_name - variable value. Matching names encased into %% will be replaces
+    by their respective value found in the mapping (case-sensitive)
+    :param string_with_variables: String where to replace the variable names (enclosed into %%'s) with their respective
+    values found in the variables_definition
+    :return: the input string with its variables replaced.
+    """
+    for variable_name, variable_value in variables_definition.items():
+        string_with_variables = string_with_variables.replace("%%{}%%".format(variable_name), variable_value)
+    return string_with_variables
+
+
+def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=(), variables=None):
     if config:
         with open(config, 'r') as fh:
             if config.endswith('.yml'):
@@ -143,10 +157,20 @@ def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=()):
             uicOptions = configData.get('uic_options', uicOptions)
             force = configData.get('force', force)
             ioPaths = configData.get('ioPaths', ioPaths)
+            variables = configData.get('variables', variables)
+
+    # Validate the custom variables
+    if variables is None:
+        variables = {}
+    if 'FILENAME' in variables.keys() or 'EXT' in variables.keys() or 'DIRNAME' in variables.keys():
+        raise ValueError("Custom variables cannot be called FILENAME, EXT or DIRNAME.")
 
     # Loop through the list of io paths
     for sourceFileExpr, destFileExpr in ioPaths:
         foundItem = False
+
+        # Replace instances of the variables with the actual values of the available variables
+        sourceFileExpr = replaceVariables(variables, sourceFileExpr)
 
         # Find files that match the source filename expression given
         for sourceFilename in glob.glob(sourceFileExpr, recursive=True):
@@ -169,9 +193,8 @@ def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=()):
             filename, ext = os.path.splitext(basename)
 
             # Replace instances of the variables with the actual values from the source filename
-            destFilename = destFileExpr.replace('%%FILENAME%%', filename) \
-                .replace('%%EXT%%', ext[1:]) \
-                .replace('%%DIRNAME%%', dirname)
+            variables.update({'FILENAME': filename, 'EXT': ext[1:], 'DIRNAME': dirname})
+            destFilename = replaceVariables(variables, destFileExpr)
 
             # Retrieve the absolute path to the source and destination filename
             sourceFilename, destFilename = os.path.abspath(sourceFilename), os.path.abspath(destFilename)
