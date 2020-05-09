@@ -1,4 +1,4 @@
-![CI](https://github.com/addisonElliott/pyqt5ac/workflows/CI/badge.svg)
+[![CI](https://github.com/addisonElliott/pyqt5ac/workflows/CI/badge.svg)](https://github.com/addisonElliott/pyqt5ac/actions)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt5ac.svg)](https://pypi.org/project/pyqt5ac/)
 [![PyPI](https://img.shields.io/pypi/v/pyqt5ac.svg)](https://pypi.org/project/pyqt5ac/)
 [![PyPI - License](https://img.shields.io/pypi/l/pyqt5ac.svg)](https://github.com/addisonElliott/pyqt5ac/blob/master/LICENSE)
