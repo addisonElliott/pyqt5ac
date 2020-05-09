@@ -80,7 +80,7 @@ The following snippet of code below demonstrates how to call pyqt5ac from your P
 import pyqt5ac
 
 if debug:
-    pyqt5ac.main(rccOptions='', uicOptions='--from-imports', force=False, config='',
+    pyqt5ac.main(rccOptions='', uicOptions='--from-imports', force=False, initPackage=True, config='',
                  ioPaths=[['gui/*.ui', 'generated/%%FILENAME%%_ui.py'],
                           ['resources/*.qrc', 'generated/%%FILENAME%%_rc.py']])
 ```
@@ -99,6 +99,7 @@ Whether running via the command line or from a script, the arguments and options
     * %%EXT%% - Extension excluding the period of the file (e.g. ui or qrc)
     * %%DIRNAME%% - Directory of the source file
 * **variables** - custom variables that can be used in the definition of the paths in **ioPaths**. For example, to limit the search of files to a specific directory, one can define a variable `BASEDIR` and then use it as `%%BASEDIR%%/gui/*.ui*`
+* **init_package** - If specified, an empty `__init__.py` file is also generated in every output directory if missing. Does not overwrite existing `__init__.py`. Default value is `True`.
 
 Example
 =======
@@ -127,7 +128,7 @@ Take the following file structure as an example project where any UI and QRC fil
 |           `-- module.qrc
 ```
 
-The sections below demonstrate how to setup pyqt5ac to compile the necssary files given the file structure above.
+The sections below demonstrate how to setup pyqt5ac to compile the necessary files given the file structure above.
 
 Option 1: YAML Config File (Recommended)
 ---------------------------------------
@@ -147,6 +148,7 @@ ioPaths:
     - "%%DIRNAME%%/generated/%%FILENAME%%_rc.py"
 
 uic_options: --from-imports
+init_package: True
 force: False
 ```
 
@@ -174,6 +176,7 @@ Option 2: JSON Config File (Deprecated)
   ],
   "rcc_options": "",
   "uic_options": "--from-imports",
+  "init_package": true,
   "force": false
 }
 ```
@@ -195,7 +198,7 @@ Option 3: Python Script
 ```python
 import pyqt5ac
 
-pyqt5ac.main(uicOptions='--from-imports', force=False, ioPaths=[
+pyqt5ac.main(uicOptions='--from-imports', force=False, initPackage=True, ioPaths=[
         ['gui/*.ui', 'generated/%%FILENAME%%_ui.py'],
         ['resources/*.qrc', 'generated/%%FILENAME%%_rc.py'],
         ['modules/*/*.ui', '%%DIRNAME%%/generated/%%FILENAME%%_ui.py'],
@@ -222,6 +225,7 @@ Resulting File Structure
 |   |-- app.qrc
 |   `-- style.qrc
 |-- generated
+|   |-- __init__.py_
 |   |-- mainWindow_ui.py
 |   |-- addDataDialog_ui.py
 |   |-- saveDataDialog_ui.py
@@ -229,18 +233,18 @@ Resulting File Structure
 |   `-- style_rc.py
 |-- modules
 |   |-- welcome
-|       |-- module.ui
-|       |-- resources
-|           |-- images
-|           `-- module.qrc
-|       `-- generated
-|           |-- module_ui.py
-|           `-- module_rc.py
+|   |   |-- module.ui
+|   |   |-- resources
+|   |   |   |-- images
+|   |   |   `-- module.qrc
+|   |   `-- generated
+|   |       |-- module_ui.py
+|   |       `-- module_rc.py
 |   `-- dataProbe
 |       |-- module.ui
 |       |-- resources
-|           |-- images
-|           `-- module.qrc
+|       |   |-- images
+|       |   `-- module.qrc
 |       `-- generated
 |           |-- module_ui.py
 |           `-- module_rc.py
