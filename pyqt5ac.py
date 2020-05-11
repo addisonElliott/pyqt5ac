@@ -8,7 +8,7 @@ import sys
 import click
 import yaml
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 # Takes information about command and creates an argument list from it
@@ -125,7 +125,8 @@ def cli(rccOptions, uicOptions, force, config, iopaths=(), initPackage=True):
     # second column the destination file expression.
     ioPaths = list(zip(iopaths[::2], iopaths[1::2]))
 
-    main(rccOptions, uicOptions, force, config, ioPaths, initPackage)
+    main(rccOptions=rccOptions, uicOptions=uicOptions, force=force, config=config, ioPaths=ioPaths,
+         initPackage=initPackage)
 
 
 def replaceVariables(variables_definition, string_with_variables):
