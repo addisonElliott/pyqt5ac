@@ -143,6 +143,24 @@ def replaceVariables(variables_definition, string_with_variables):
     return string_with_variables
 
 
+def resolvePath(path: str, reference_path: str) -> str:
+    """
+    Translates relative paths into absolute paths, using the reference path as base.
+    Meaningful reference values for the caller might be the configuration file path, the script's path or the current
+    working directory.
+    :param path: path to resolve.
+    :param reference_path: path to be used as a reference to resolve absolute paths
+    :return: an absolute path corresponding to the relative path passed in input if it was relative, or the unchanged
+    input if it was an absolute path.
+    :raises: ValueError if the reference path is not absolute
+    """
+    if not os.path.isabs(path):
+        if not os.path.isabs(reference_path):
+            raise ValueError("The reference path must be absolute.")
+        return os.path.join(reference_path, path)
+    return path
+
+
 def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=(), variables=None, initPackage=True):
     if config:
         with open(config, 'r') as fh:
@@ -177,6 +195,9 @@ def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=(), varia
         # Replace instances of the variables with the actual values of the available variables
         sourceFileExpr = replaceVariables(variables, sourceFileExpr)
 
+        # Retrieve the absolute path to the source files
+        sourceFileExpr = resolvePath(sourceFileExpr, (os.path.dirname(config) or os.getcwd()))
+
         # Find files that match the source filename expression given
         for sourceFilename in glob.glob(sourceFileExpr, recursive=True):
             # If the filename does not exist, not sure why this would ever occur, but show a warning
@@ -201,8 +222,8 @@ def main(rccOptions='', uicOptions='', force=False, config='', ioPaths=(), varia
             variables.update({'FILENAME': filename, 'EXT': ext[1:], 'DIRNAME': dirname})
             destFilename = replaceVariables(variables, destFileExpr)
 
-            # Retrieve the absolute path to the source and destination filename
-            sourceFilename, destFilename = os.path.abspath(sourceFilename), os.path.abspath(destFilename)
+            # Retrieve the absolute path to the destination files
+            destFilename = resolvePath(destFilename, (os.path.dirname(config) or os.getcwd()))
 
             if ext == '.ui':
                 isQRCFile = False
